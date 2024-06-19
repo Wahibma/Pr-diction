@@ -129,6 +129,6 @@ if st.button('Prédire'):
         model = load('best_model.joblib')
         
         # Prédire
-        prediction = round(model.predict(encoded_vars)[0])
+        prediction = round(model.predict(encoded_vars),0)
         st.write(f"Nombre moyen d'indices prédit : {prediction[0]}")
 
