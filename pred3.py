@@ -88,18 +88,28 @@ def find_similar_category(category, category_list):
     return similar
 
 # Application Streamlit
-st.title('Prédiction du Nombre Moyen d\'Indices')
+st.title('Outil de Prédiction du Nombre Moyen d\'Indices')
+st.write("""
+### Description
+Cet outil de prédiction utilise des techniques de machine learning pour estimer le nombre moyen d'indices en fonction de différents types de documents, catégories de documents et descriptions de lots. Il s'agit d'un outil puissant et facile à utiliser pour obtenir des prédictions précises.
 
-st.write("### Résultats des modèles")
+### Instructions
+1. **Type de Document** : Saisissez le type de document (par exemple, CPE, PLN).
+2. **Catégorie de Document** : Saisissez la catégorie de document (par exemple, docs graphiques, docs écris).
+3. **Description du Lot** : Saisissez la description du lot (par exemple, Serrurerie - Métallerie, Gros-œuvre).
+4. Cliquez sur le bouton **Prédire** pour obtenir la prédiction du nombre moyen d'indices.
+""")
+
+st.write("### Résultats des Modèles")
 results_df = pd.DataFrame(results).T
 st.write(results_df)
 
-st.write(f"### Le meilleur modèle est : {best_model_name}")
+st.write(f"### Le Meilleur Modèle est : {best_model_name}")
 
-st.write("### Faites des prédictions")
-type_doc = st.text_input('Type de Document')
-categ_docs = st.text_input('Catégorie de Document')
-desc_lot = st.text_input('Description du Lot')
+st.write("### Faites des Prédictions")
+type_doc = st.text_input('Type de Document', help='Entrez le type de document, par exemple, CPE, PLN.')
+categ_docs = st.text_input('Catégorie de Document', help='Entrez la catégorie de document, par exemple, docs graphiques, docs écris.')
+desc_lot = st.text_input('Description du Lot', help='Entrez la description du lot, par exemple, Serrurerie - Métallerie, Gros-œuvre.')
 
 if st.button('Prédire'):
     # Encoder les variables d'entrée
@@ -131,4 +141,3 @@ if st.button('Prédire'):
         # Prédire
         prediction = model.predict(encoded_vars)
         st.write(f"Nombre moyen d'indices prédit : {prediction[0]}")
-
