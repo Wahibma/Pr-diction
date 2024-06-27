@@ -27,7 +27,7 @@ def generate_qr_code(url):
     return byte_im
 
 # URL de votre application Streamlit
-app_url = "https://pr-diction-nbremoyenindice.streamlit.app/"
+app_url = "https://pr-diction-nbremoyenindice.streamlit.app"
 
 # Génération du QR code
 qr_image = generate_qr_code(app_url)
