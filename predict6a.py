@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import streamlit as st
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
@@ -29,7 +29,7 @@ def load_data(filepath):
     
     return train_test_split(X, y, test_size=0.2, random_state=42), encoder, donnees
 
-# Fonction pour entraîner et évaluer les modèles
+# Fonction pour entraîner et évaluer les modèles avec GridSearchCV
 def train_and_evaluate_models(X_train, X_test, y_train, y_test):
     results = {}
     models = {}
@@ -45,27 +45,45 @@ def train_and_evaluate_models(X_train, X_test, y_train, y_test):
     }
     models['Régression Linéaire'] = (model_lr, y_pred_lr)
     
-    # Forêt Aléatoire
+    # Forêt Aléatoire avec GridSearchCV
     rf_model = RandomForestRegressor(random_state=42)
-    rf_model.fit(X_train, y_train)
-    y_pred_rf = rf_model.predict(X_test)
+    rf_param_grid = {
+        'n_estimators': [100, 200],
+        'max_features': ['auto', 'sqrt'],
+        'max_depth': [10, 20],
+        'min_samples_split': [2, 5],
+        'min_samples_leaf': [1, 2]
+    }
+    rf_grid_search = GridSearchCV(estimator=rf_model, param_grid=rf_param_grid, cv=3, n_jobs=-1, verbose=2)
+    rf_grid_search.fit(X_train, y_train)
+    best_rf_model = rf_grid_search.best_estimator_
+    y_pred_rf = best_rf_model.predict(X_test)
     results['Forêt Aléatoire'] = {
         'MAE': mean_absolute_error(y_test, y_pred_rf),
         'MSE': mean_squared_error(y_test, y_pred_rf),
         'R2': r2_score(y_test, y_pred_rf)
     }
-    models['Forêt Aléatoire'] = (rf_model, y_pred_rf)
+    models['Forêt Aléatoire'] = (best_rf_model, y_pred_rf)
     
-    # Gradient Boosting
+    # Gradient Boosting avec GridSearchCV
     gb_model = GradientBoostingRegressor(random_state=42)
-    gb_model.fit(X_train, y_train)
-    y_pred_gb = gb_model.predict(X_test)
+    gb_param_grid = {
+        'n_estimators': [100, 200],
+        'learning_rate': [0.01, 0.1],
+        'max_depth': [3, 4],
+        'min_samples_split': [2, 5],
+        'min_samples_leaf': [1, 2]
+    }
+    gb_grid_search = GridSearchCV(estimator=gb_model, param_grid=gb_param_grid, cv=3, n_jobs=-1, verbose=2)
+    gb_grid_search.fit(X_train, y_train)
+    best_gb_model = gb_grid_search.best_estimator_
+    y_pred_gb = best_gb_model.predict(X_test)
     results['Gradient Boosting'] = {
         'MAE': mean_absolute_error(y_test, y_pred_gb),
         'MSE': mean_squared_error(y_test, y_pred_gb),
         'R2': r2_score(y_test, y_pred_gb)
     }
-    models['Gradient Boosting'] = (gb_model, y_pred_gb)
+    models['Gradient Boosting'] = (best_gb_model, y_pred_gb)
     
     return results, models
 
@@ -105,14 +123,6 @@ st.write("""
 Cet outil de prédiction utilise des techniques de machine learning pour estimer le nombre moyen d'indices en fonction de différents types de documents, catégories de documents et descriptions de lots. 
 Il s'agit d'un outil puissant et facile à utiliser pour obtenir des prédictions précises.
 """)
-
-# Filtrage des données par variables explicatives
-st.write("### Filtrage des Données")
-selected_type_doc = st.selectbox('Type de Document', donnees['TYPE DE DOCUMENT'].unique(), help='Sélectionnez le type de document.')
-filtered_data = donnees[donnees['TYPE DE DOCUMENT'] == selected_type_doc]
-selected_categ_docs = st.selectbox('Catégorie de Document', filtered_data['Categ_Docs'].unique(), help='Sélectionnez la catégorie de document.')
-filtered_data = filtered_data[filtered_data['Categ_Docs'] == selected_categ_docs]
-selected_desc_lot = st.selectbox('Description du Lot', filtered_data['desc_lot'].unique(), help='Sélectionnez la description du lot.')
 
 # Structurer la mise en page avec des colonnes
 col1, col2 = st.columns(2)
@@ -156,9 +166,9 @@ with col2:
     known_categ_docs = donnees['Categ_Docs'].unique()
     known_desc_lot = donnees['desc_lot'].unique()
 
-    type_doc = st.selectbox('Type de Document', known_type_docs, help='Sélectionnez le type de document.')
-    categ_docs = st.selectbox('Catégorie de Document', known_categ_docs, help='Sélectionnez la catégorie de document.')
-    desc_lot = st.selectbox('Description du Lot', known_desc_lot, help='Sélectionnez la description du lot.')
+    type_doc = st.selectbox('Type de Document', known_type_docs, key='type_doc', help='Sélectionnez le type de document.')
+    categ_docs = st.selectbox('Catégorie de Document', known_categ_docs, key='categ_docs', help='Sélectionnez la catégorie de document.')
+    desc_lot = st.selectbox('Description du Lot', known_desc_lot, key='desc_lot', help='Sélectionnez la description du lot.')
 
     if st.button('Prédire'):
         # Encoder les variables d'entrée
