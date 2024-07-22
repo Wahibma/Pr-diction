@@ -134,7 +134,7 @@ dump(encodeur, 'encodeur.joblib')
 col1, col2 = st.columns(2)
 
 with col1:
-    st.header("Résultats des Modèles")
+    st.header("1. Résultats des modèles")
     st.write("Les résultats des différents modèles de machine learning utilisés pour la prédiction :")
     resultats_df = pd.DataFrame(resultats).T
     st.write(resultats_df)
