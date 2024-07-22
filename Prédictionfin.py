@@ -161,7 +161,7 @@ with col1:
         st.pyplot(fig)
 
 with col2:
-    st.header("Faites des Prédictions")
+    st.header("3. Faites des Prédictions")
     st.write("""
     ### Instructions
     1. **Type de Document** : Sélectionnez le type de document dans la liste déroulante.
