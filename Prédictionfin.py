@@ -146,8 +146,8 @@ with col1:
     - **Gradient Boosting** : Ce modèle construit des arbres de décision de manière séquentielle, chaque arbre corrigant les erreurs des arbres précédents. Il est très précis et efficace pour les relations complexes, mais peut être plus difficile à interpréter et plus long à entraîner.
     """)
 
-    # Importance des variables
-    st.header("Importance des Variables")
+    # Effet des modalités de chaque variable
+    st.header("2. Effet des modalités de chaque variable")
     if meilleur_modele_nom in ['Forêt Aléatoire', 'Gradient Boosting']:
         importances = modeles[meilleur_modele_nom][0].feature_importances_
         noms_variables = encodeur.get_feature_names_out()
