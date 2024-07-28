@@ -147,21 +147,9 @@ with col1:
         noms_variables = encodeur.get_feature_names_out()
         importance_df = pd.DataFrame({'Variable': noms_variables, 'Importance': importances})
         importance_df = importance_df.sort_values(by='Importance', ascending=False)
+        st.write(importance_df)
         
-        st.write(importance_df.style.format("{:.2f}").set_table_styles(
-            [{
-                'selector': 'th',
-                'props': [('background-color', '#f0f2f6')]
-            }, {
-                'selector': 'td',
-                'props': [('background-color', 'white')]
-            }]
-        ).set_properties(**{
-            'text-align': 'left',
-            'font-size': '14px'
-        }))
-        
-        fig, ax = plt.subplots(figsize=(12, 8))  # Adjusted figure size for better visibility
+        fig, ax = plt.subplots(figsize=(10, 6))
         sns.barplot(x='Importance', y='Variable', data=importance_df, ax=ax)
         ax.set_title(f'Importance des Variables pour le modèle {meilleur_modele_nom}')
         st.pyplot(fig)
